@@ -3,6 +3,9 @@ const cross = "https://storage.googleapis.com/material-icons/external-assets/v4/
 
 let map;
 
+const streams = [];
+const markers = [];
+
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 51.508235, lng: -0.324592},
@@ -21,16 +24,33 @@ function initMap() {
   fetchCommutes("to_work")
     .then(x => x.map(j => j.id))
     .then(ids => {
+      const proms = [];
       for (const id of ids) {
-        fetchActivity(id).then(x => {
+        proms.push(fetchActivity(id).then(x => {
           if (x.stream[0].point.lng < -0.321546) {
             return;
           }
           map.data.addGeoJson(makeGeoJson(x.stream));
-          // console.log(x.stream);
-        });
+          return x;
+        }))
       }
-    });
+      return Promise.all(proms);
+    })
+    .then(activities => {
+      const minTime = activities.filter(Boolean).map(a => a.stream[0].time).sort()[0];
+      console.log("minTime = ", minTime);
+      for (const a of activities.filter(Boolean)) {
+        relativeTime(a, minTime);
+        streams.push(a.stream);
+        markers.push(new google.maps.Marker({
+          position: a.stream[0].point,
+          map: map,
+        }));
+      }
+
+      console.log("markers = ", markers);
+      console.log("streams = ", streams);
+    })
 }
 
 function makeGeoJson(stream) {
@@ -64,7 +84,7 @@ function fetchCommutes(direction) {
 function fetchActivity(id) {
   return fetch("https://nene.strava.com/flyby/stream_compare/" + id + "/" + id)
     .then(x => x.json())
-}657647143
+}
 
 function posAtTimeT(activity, t) {
   const i = greatestIndexLessThanT_v1(activity, t);
@@ -77,15 +97,15 @@ function posAtTimeT(activity, t) {
   t /= p2.time;
 
   return {
-    lat: (1-t) * p1.point.lat + t * p2.point.lat;
-    lng: t * p1.point.lng + (1-t) * p2.point.lng;
+    lat: (1-t) * p1.point.lat + t * p2.point.lat,
+    lng: t * p1.point.lng + (1-t) * p2.point.lng,
   }
 }
 
 function greatestIndexLessThanT_v1(activity, t) {
   let i = 0;
 
-  while (!(activity[i].time <= t && t <= activity[i+1].time)) {
+  while (i < activity.length && !(activity[i].time <= t && t <= activity[i+1].time)) {
     i++;
   }
 
@@ -106,4 +126,10 @@ function greatestIndexLessThanT_v2(activity, t) {
 
   return i;
 
+}
+
+function relativeTime(activity, t) {
+  for (const s of activity.stream) {
+    s.time -= t;
+  }
 }
