@@ -50,6 +50,8 @@ function initMap() {
 
       console.log("markers = ", markers);
       console.log("streams = ", streams);
+
+      console.log(streams.filter(Boolean).map(s => posAtTimeT(s, 1447666275)))
     })
 }
 
@@ -89,6 +91,10 @@ function fetchActivity(id) {
 function posAtTimeT(activity, t) {
   const i = greatestIndexLessThanT_v1(activity, t);
   const p1 = JSON.parse(JSON.stringify(activity[i]));
+  if (i === activity.length - 1) {
+    activity.push(activity[i]);
+  }
+
   const p2 = JSON.parse(JSON.stringify(activity[i+1]));
   
   t -= p1.time;
@@ -105,7 +111,7 @@ function posAtTimeT(activity, t) {
 function greatestIndexLessThanT_v1(activity, t) {
   let i = 0;
 
-  while (i < activity.length && !(activity[i].time <= t && t <= activity[i+1].time)) {
+  while (i < activity.length - 1 && !(activity[i].time <= t && t <= activity[i+1].time)) {
     i++;
   }
 
