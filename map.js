@@ -40,7 +40,7 @@ function initMap() {
       const minTime = activities.filter(Boolean).map(a => a.stream[0].time).sort()[0];
       console.log("minTime = ", minTime);
       for (const a of activities.filter(Boolean)) {
-        relativeTime(a, minTime);
+        relativeTime(a);
         streams.push(a.stream);
         markers.push(new google.maps.Marker({
           position: a.stream[0].point,
@@ -53,6 +53,12 @@ function initMap() {
 
       console.log(streams.filter(Boolean).map(s => posAtTimeT(s, 1447666275)))
     })
+}
+
+function moveMarkersToTimeT(t) {
+  for (let i = 0; i < streams.length; i++) {
+    markers[i].setPosition(posAtTimeT(streams[i], t));
+  }
 }
 
 function makeGeoJson(stream) {
@@ -96,8 +102,11 @@ function posAtTimeT(activity, t) {
   }
 
   const p2 = JSON.parse(JSON.stringify(activity[i+1]));
-  
+
   t -= p1.time;
+  if (p1.time === p2.time) {
+    return p1.point;
+  }
   p2.time -= p1.time;
   p1.time -= p1.time;
   t /= p2.time;
@@ -127,15 +136,24 @@ function greatestIndexLessThanT_v2(activity, t) {
     if (activity[i].time <= t) {
       start = i + 1;
       i = Math.floor((start + end) / 2);
-    } 
+    }
   }
 
   return i;
 
 }
 
-function relativeTime(activity, t) {
+function relativeTime(activity) {
+  const minTime = activity.stream[0].time;
   for (const s of activity.stream) {
-    s.time -= t;
+    s.time -= minTime;
   }
+}
+
+function play() {
+  let i = 0;
+  setInterval(() => {
+    moveMarkersToTimeT(i);
+    i += 1;
+  }, 10)
 }
