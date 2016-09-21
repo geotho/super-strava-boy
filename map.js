@@ -157,3 +157,9 @@ function play() {
     i += 1;
   }, 10)
 }
+
+function onSlider() {
+  const slider = document.getElementById("time");
+  const t = parseInt(slider.value);
+  moveMarkersToTimeT(t);
+}
