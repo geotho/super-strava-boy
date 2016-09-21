@@ -8,6 +8,9 @@
         <div class="flex flex-auto">
             <div id='map' style='width: 100%; height: 100vh;'></div>
         </div>
+        <div class="absolute p1 m1" style="bottom: 10px; width: calc(100% - 2rem); height:50px; background:rgba(255,255,255,0.9);">
+            <h2><input type="range" name="points" min="0" max="10"></h2>
+        </div>
         <script src="map.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?callback=initMap&libraries=drawing" async defer></script>
     </body>
