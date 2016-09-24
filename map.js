@@ -2,6 +2,8 @@ const pubStravaToken = "57a2e0bbc8a2789e2a56cb2f911d76d6ce48b5e5";
 const cross = "https://storage.googleapis.com/material-icons/external-assets/v4/icons/svg/ic_close_black_16px.svg"
 
 let map;
+let playInterval;
+let markerTime = 0;
 
 const streams = [];
 const markers = [];
@@ -150,16 +152,18 @@ function relativeTime(activity) {
   }
 }
 
-function play() {
-  let i = 0;
-  setInterval(() => {
-    moveMarkersToTimeT(i);
-    i += 1;
-  }, 10)
-}
+function playPause(btn) {
+  if (playInterval) {
+    clearInterval(playInterval);
+    playInterval = 0;
+    btn.innerHTML = "Play";
+    return;
+  }
 
-function onSlider() {
-  const slider = document.getElementById("time");
-  const t = parseInt(slider.value);
-  moveMarkersToTimeT(t);
+  playInterval = setInterval(() => {
+    moveMarkersToTimeT(markerTime);
+    markerTime += 1;
+    document.getElementById("time").value = markerTime;
+  }, 10)
+  btn.innerHTML = "Pause";
 }
