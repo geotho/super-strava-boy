@@ -113,7 +113,7 @@ function posAtTimeT(activity, t) {
 
   return {
     lat: (1-t) * p1.point.lat + t * p2.point.lat,
-    lng: t * p1.point.lng + (1-t) * p2.point.lng,
+    lng: (1-t) * p1.point.lng + t * p2.point.lng,
   }
 }
 
