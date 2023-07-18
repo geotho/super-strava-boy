@@ -6,7 +6,9 @@ Inspired by the death replay at the end of [Super Meat Boy levels](https://www.y
 
 Written natively in ES6 so if you aren't using the latest Chrome it probably won't work.
 
-## ffmpeg
+## Video
+
+[super-strava-boy-vid.webm](https://github.com/geotho/super-strava-boy/assets/2182503/c3497465-ba26-4c00-97f3-7ddfe3e18dd6)
 
 Note to self: here's the `ffmpeg` command I used to convert the video to webm:
 
