@@ -31,9 +31,6 @@ function initMap() {
       for (const id of ids) {
         proms.push(
           fetchActivityLocal(id).then((x) => {
-            if (x.stream[0].point.lng < -0.321546) {
-              return;
-            }
             map.data.addGeoJson(makeGeoJson(x.stream));
             return x;
           })
